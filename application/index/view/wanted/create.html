@@ -1,0 +1,64 @@
+{extend name="layout" /}
+{block name="content"}
+<div style="font-size:20px;font-weight:700;color:#f0f0f0;margin-bottom:20px">🔍 发布求购</div>
+
+<form action="{:url('wanted/save')}" method="post" enctype="multipart/form-data" id="wantedForm">
+<div class="form-group">
+  <label class="form-label">求购标题 *</label>
+  <input type="text" name="title" class="form-input" placeholder="例如：求购二手iPhone 12" maxlength="200" required>
+</div>
+
+<div class="form-group">
+  <label class="form-label">求购描述</label>
+  <textarea name="description" class="form-textarea" placeholder="描述想要的物品要求..." maxlength="2000"></textarea>
+</div>
+
+<div class="form-group">
+  <label class="form-label">求购地址 *</label>
+  <input type="text" name="wanted_address" class="form-input" placeholder="例如：XX小区南门" maxlength="500" required>
+  <div class="form-hint">您期望的交货地点</div>
+</div>
+
+<div class="form-group">
+  <label class="form-label">参考图片（1张）</label>
+  <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+    <div class="icon">🖼️</div>
+    <div class="text">点击上传参考图片</div>
+    <div class="form-hint">支持 JPG/PNG/GIF/WebP，不超过5MB</div>
+  </div>
+  <input type="file" name="image" id="fileInput" accept="image/*" onchange="previewImage(event)">
+  <div class="upload-preview" id="previewContainer"></div>
+</div>
+
+<div style="margin-top:24px;display:flex;gap:12px">
+  <button type="submit" class="btn btn-primary" style="flex:1">发布求购</button>
+  <a href="{:url('wanted/index')}" class="btn" style="background:#1a1a24;color:#888;border:1px solid #2a2a3a">取消</a>
+</div>
+</form>
+
+<script>
+function previewImage(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var c = document.getElementById('previewContainer');
+  c.innerHTML = '';
+  var div = document.createElement('div');
+  div.className = 'upload-preview-item';
+  var img = document.createElement('img');
+  img.src = URL.createObjectURL(file);
+  var del = document.createElement('button');
+  del.className = 'del';
+  del.textContent = '×';
+  del.onclick = function(e){
+    e.stopPropagation();
+    c.innerHTML = '';
+    document.getElementById('fileInput').value = '';
+    document.getElementById('uploadArea').style.display = '';
+  };
+  div.appendChild(img);
+  div.appendChild(del);
+  c.appendChild(div);
+  document.getElementById('uploadArea').style.display = 'none';
+}
+</script>
+{/block}

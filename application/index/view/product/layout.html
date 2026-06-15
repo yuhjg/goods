@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>二手交易平台</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0f0f13;color:#e0e0e0;min-height:100vh;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:#a78bfa;text-decoration:none}
+a:active{opacity:.7}
+
+/* Header */
+.header{background:linear-gradient(135deg,#635BFF,#8b5cf6);padding:16px 20px;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(99,91,255,.3)}
+.header-inner{max-width:640px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.header h1{font-size:22px;font-weight:700;color:#fff;letter-spacing:-0.5px}
+.header-actions{display:flex;gap:8px}
+.header-actions a{display:inline-flex;align-items:center;gap:4px;padding:8px 14px;border-radius:8px;background:rgba(255,255,255,.15);color:#fff;font-size:14px;font-weight:500;transition:background .2s}
+.header-actions a:active{background:rgba(255,255,255,.25)}
+
+/* Tab Nav */
+.tab-nav{background:#1a1a24;border-bottom:1px solid #2a2a3a;position:sticky;top:56px;z-index:99}
+.tab-inner{max-width:640px;margin:0 auto;display:flex}
+.tab-inner a{flex:1;text-align:center;padding:14px 0;font-size:15px;font-weight:600;color:#888;border-bottom:2px solid transparent;transition:all .2s}
+.tab-inner a.active{color:#a78bfa;border-bottom-color:#a78bfa}
+.tab-inner a:active{background:rgba(99,91,255,.08)}
+
+/* Container */
+.container{max-width:640px;margin:0 auto;padding:16px}
+
+/* Cards */
+.card{background:#1a1a24;border-radius:14px;padding:16px;margin-bottom:14px;border:1px solid #2a2a3a;transition:transform .15s,border-color .15s}
+.card:active{transform:scale(.99)}
+.card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.card-title{font-size:17px;font-weight:600;color:#f0f0f0;flex:1;line-height:1.4}
+.card-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;white-space:nowrap;margin-left:10px}
+.badge-active{background:rgba(52,211,153,.15);color:#34d399}
+.badge-completed{background:rgba(59,130,246,.15);color:#60a5fa}
+.badge-cancelled{background:rgba(248,113,113,.15);color:#f87171}
+.card-meta{display:flex;flex-wrap:wrap;gap:12px;font-size:13px;color:#888;margin-top:6px}
+.card-meta span{display:inline-flex;align-items:center;gap:4px}
+.card-price{font-size:22px;font-weight:700;color:#34d399;margin-top:8px}
+.card-price .original{font-size:14px;color:#666;text-decoration:line-through;margin-left:8px;font-weight:400}
+.card-images{display:flex;gap:8px;margin-top:12px;overflow-x:auto}
+.card-images img{width:100px;height:100px;object-fit:cover;border-radius:8px;border:1px solid #2a2a3a;flex-shrink:0}
+.card-address{display:flex;align-items:center;gap:4px;font-size:13px;color:#888;margin-top:8px;padding-top:8px;border-top:1px solid #2a2a3a}
+.card-time{font-size:12px;color:#555;margin-top:4px}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 20px;border-radius:10px;font-size:15px;font-weight:600;border:none;cursor:pointer;transition:all .2s;text-decoration:none}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:linear-gradient(135deg,#635BFF,#8b5cf6);color:#fff;box-shadow:0 2px 12px rgba(99,91,255,.3)}
+.btn-success{background:rgba(52,211,153,.15);color:#34d399;border:1px solid rgba(52,211,153,.2)}
+.btn-danger{background:rgba(248,113,113,.1);color:#f87171;border:1px solid rgba(248,113,113,.2)}
+.btn-sm{padding:6px 14px;font-size:13px;border-radius:8px}
+.btn-group{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+
+/* Form */
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:14px;font-weight:600;color:#bbb;margin-bottom:6px}
+.form-input,.form-textarea{width:100%;padding:12px 14px;background:#12121a;border:1px solid #2a2a3a;border-radius:10px;color:#e0e0e0;font-size:15px;font-family:inherit;transition:border-color .2s;outline:none}
+.form-input:focus,.form-textarea:focus{border-color:#635BFF;box-shadow:0 0 0 3px rgba(99,91,255,.1)}
+.form-textarea{min-height:100px;resize:vertical}
+.form-hint{font-size:12px;color:#666;margin-top:4px}
+
+/* File Upload */
+.upload-area{border:2px dashed #2a2a3a;border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:border-color .2s}
+.upload-area:hover,.upload-area.dragover{border-color:#635BFF}
+.upload-area .icon{font-size:36px;margin-bottom:6px}
+.upload-area .text{font-size:14px;color:#888}
+.upload-preview{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.upload-preview-item{position:relative;width:90px;height:90px;border-radius:8px;overflow:hidden;border:1px solid #2a2a3a}
+.upload-preview-item img{width:100%;height:100%;object-fit:cover}
+.upload-preview-item .del{position:absolute;top:2px;right:2px;width:22px;height:22px;background:rgba(248,113,113,.9);color:#fff;border:none;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+#file-input{display:none}
+
+/* Detail Page */
+.detail-image{width:100%;max-height:400px;object-fit:contain;background:#0a0a0f;border-radius:12px;margin-bottom:16px}
+.detail-images{display:flex;gap:8px;overflow-x:auto;margin-bottom:16px;padding-bottom:4px}
+.detail-images img{width:80px;height:80px;object-fit:cover;border-radius:8px;border:2px solid transparent;cursor:pointer;flex-shrink:0}
+.detail-images img.active{border-color:#635BFF}
+.detail-title{font-size:22px;font-weight:700;color:#f0f0f0;margin-bottom:12px}
+.detail-price-row{display:flex;align-items:baseline;gap:12px;margin-bottom:16px;padding:14px;background:#12121a;border-radius:10px}
+.detail-price{font-size:28px;font-weight:700;color:#34d399}
+.detail-original{font-size:16px;color:#666;text-decoration:line-through}
+.detail-info{margin-bottom:16px}
+.detail-info-item{display:flex;padding:10px 0;border-bottom:1px solid #1f1f2a;font-size:15px}
+.detail-info-label{color:#888;width:80px;flex-shrink:0;font-weight:500}
+.detail-info-value{color:#e0e0e0;flex:1}
+.detail-desc{background:#12121a;border-radius:10px;padding:14px;font-size:15px;line-height:1.8;color:#ccc;white-space:pre-wrap;margin-bottom:16px}
+
+/* Empty State */
+.empty{text-align:center;padding:60px 20px;color:#555}
+.empty .icon{font-size:48px;margin-bottom:12px}
+.empty p{font-size:15px}
+
+/* Pagination */
+.pagination{display:flex;justify-content:center;gap:6px;margin-top:20px;flex-wrap:wrap}
+.pagination a,.pagination span{display:inline-block;padding:8px 14px;border-radius:8px;font-size:14px;background:#1a1a24;border:1px solid #2a2a3a;color:#aaa;text-decoration:none}
+.pagination .active{background:#635BFF;color:#fff;border-color:#635BFF}
+.pagination .disabled{opacity:.4}
+
+/* Flash Messages (success/error redirect) */
+.alert{max-width:640px;margin:20px auto;padding:16px 20px;border-radius:12px;text-align:center;font-size:15px}
+.alert-success{background:rgba(52,211,153,.1);color:#34d399;border:1px solid rgba(52,211,153,.2)}
+.alert-error{background:rgba(248,113,113,.1);color:#f87171;border:1px solid rgba(248,113,113,.2)}
+
+/* Bottom FAB */
+.fab{position:fixed;bottom:24px;right:24px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#635BFF,#8b5cf6);color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 4px 20px rgba(99,91,255,.4);z-index:50;transition:transform .2s;text-decoration:none}
+.fab:active{transform:scale(.92)}
+
+/* Status Filter */
+.filter-bar{display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px}
+.filter-bar a{padding:8px 16px;border-radius:20px;font-size:13px;font-weight:600;white-space:nowrap;background:#1a1a24;color:#888;border:1px solid #2a2a3a}
+.filter-bar a.active{background:rgba(99,91,255,.15);color:#a78bfa;border-color:#635BFF}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <a href="{:url('index/index')}" style="color:#fff;text-decoration:none"><h1>二手交易</h1></a>
+    <div class="header-actions">
+      <a href="{:url('product/create')}">+ 卖</a>
+      <a href="{:url('wanted/create')}">+ 买</a>
+    </div>
+  </div>
+</div>
+
+<div class="tab-nav">
+  <div class="tab-inner">
+    <a href="{:url('index/index')}" class="{if request()->controller() == 'Index'}active{/if}">🏠 首页</a>
+    <a href="{:url('product/index')}" class="{if request()->controller() == 'Product'}active{/if}">📦 出售</a>
+    <a href="{:url('wanted/index')}" class="{if request()->controller() == 'Wanted'}active{/if}">🔍 求购</a>
+  </div>
+</div>
+
+<div class="container">
+{block name="content"}{/block}
+</div>
+
+<div style="text-align:center;padding:30px 20px;color:#444;font-size:13px">
+  二手交易平台 &copy; {:date('Y')}
+</div>
+
+</body>
+</html>

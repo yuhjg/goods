@@ -1,0 +1,141 @@
+{extend name="layout" /}
+{block name="content"}
+<div style="font-size:20px;font-weight:700;color:#f0f0f0;margin-bottom:20px">✏️ 编辑商品</div>
+
+<form action="{:url('product/update', ['id'=>$product.id])}" method="post" enctype="multipart/form-data" id="productForm">
+<div class="form-group">
+  <label class="form-label">商品标题 *</label>
+  <input type="text" name="title" class="form-input" value="{$product.title}" maxlength="200" required>
+</div>
+
+<div class="form-group">
+  <label class="form-label">商品描述</label>
+  <textarea name="description" class="form-textarea" placeholder="描述商品成色、使用情况等..." maxlength="2000">{$product.description}</textarea>
+</div>
+
+<div class="form-group">
+  <label class="form-label">成交价（元）*</label>
+  <input type="number" name="selling_price" class="form-input" value="{$product.selling_price}" step="0.01" min="0.01" required>
+</div>
+
+<div class="form-group">
+  <label class="form-label">原价（元）</label>
+  <input type="number" name="original_price" class="form-input" value="{$product.original_price}" step="0.01" min="0">
+</div>
+
+<div class="form-group">
+  <label class="form-label">自提地址 *</label>
+  <input type="text" name="pickup_address" class="form-input" value="{$product.pickup_address}" maxlength="500" required>
+</div>
+
+<!-- 已有图片 -->
+{if !empty($product.images)}
+<div class="form-group">
+  <label class="form-label">已有图片（点击 × 删除）</label>
+  <div class="upload-preview" id="existingImages">
+    {foreach $product.images as $img}
+    <div class="upload-preview-item" id="img-{$img.id}">
+      <img src="{$img.image_url}" alt="">
+      <button type="button" class="del" onclick="deleteImage({$img.id}, this.parentElement)">×</button>
+    </div>
+    {/foreach}
+  </div>
+</div>
+{/if}
+
+<div class="form-group">
+  <label class="form-label">添加新图片（最多共3张）</label>
+  {php}$remaining = 3 - count($product.images);{/php}
+  {if $remaining > 0}
+  <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+    <div class="icon">📷</div>
+    <div class="text">还可上传 {$remaining} 张</div>
+  </div>
+  <input type="file" name="images[]" id="fileInput" accept="image/*" multiple onchange="previewNewImages(event)">
+  <div class="upload-preview" id="newPreviewContainer"></div>
+  {else}
+  <div class="form-hint">已达3张上限，请先删除已有图片</div>
+  {/if}
+</div>
+
+<div id="deleteImageIds"></div>
+
+<div style="margin-top:24px;display:flex;gap:12px">
+  <button type="submit" class="btn btn-primary" style="flex:1">保存修改</button>
+  <a href="{:url('product/detail', ['id'=>$product.id])}" class="btn" style="background:#1a1a24;color:#888;border:1px solid #2a2a3a">取消</a>
+</div>
+</form>
+
+<script>
+var newFiles = [];
+var deleteIds = [];
+var maxTotal = 3;
+var existingCount = {$product.images|count};
+
+function deleteImage(id, el) {
+  if (!confirm('确认删除此图片？')) return;
+  deleteIds.push(id);
+  el.remove();
+  existingCount--;
+  updateDeleteInputs();
+  updateUploadVisibility();
+}
+function updateDeleteInputs() {
+  var container = document.getElementById('deleteImageIds');
+  container.innerHTML = '';
+  deleteIds.forEach(function(id){
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'delete_images[]';
+    input.value = id;
+    container.appendChild(input);
+  });
+}
+function updateUploadVisibility() {
+  var remaining = maxTotal - existingCount - newFiles.length;
+  var area = document.getElementById('uploadArea');
+  if (remaining <= 0) area.style.display = 'none';
+  else {
+    area.style.display = '';
+    area.querySelector('.text').textContent = '还可上传 ' + remaining + ' 张';
+  }
+}
+function previewNewImages(e) {
+  var files = Array.from(e.target.files);
+  var remaining = maxTotal - existingCount - newFiles.length;
+  if (remaining <= 0) return;
+  newFiles = newFiles.concat(files).slice(0, remaining);
+  renderNewPreviews();
+  updateNewFileInput();
+  updateUploadVisibility();
+}
+function removeNewImage(idx) {
+  newFiles.splice(idx, 1);
+  renderNewPreviews();
+  updateNewFileInput();
+  updateUploadVisibility();
+}
+function renderNewPreviews() {
+  var c = document.getElementById('newPreviewContainer');
+  c.innerHTML = '';
+  newFiles.forEach(function(f,i){
+    var div = document.createElement('div');
+    div.className = 'upload-preview-item';
+    var img = document.createElement('img');
+    img.src = URL.createObjectURL(f);
+    var del = document.createElement('button');
+    del.className = 'del';
+    del.textContent = '×';
+    del.onclick = function(e){e.stopPropagation();removeNewImage(i)};
+    div.appendChild(img);
+    div.appendChild(del);
+    c.appendChild(div);
+  });
+}
+function updateNewFileInput() {
+  var dt = new DataTransfer();
+  newFiles.forEach(function(f){dt.items.add(f)});
+  document.getElementById('fileInput').files = dt.files;
+}
+</script>
+{/block}

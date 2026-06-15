@@ -1,0 +1,36 @@
+{extend name="layout" /}
+{block name="content"}
+<div class="filter-bar">
+  <a href="{:url('wanted/index', ['status'=>1])}" class="{if $status==1}active{/if}">求购中</a>
+  <a href="{:url('wanted/index', ['status'=>2])}" class="{if $status==2}active{/if}">已完成</a>
+  <a href="{:url('wanted/index', ['status'=>3])}" class="{if $status==3}active{/if}">已撤消</a>
+</div>
+
+{if empty($list)}
+<div class="empty"><div class="icon">🔍</div><p>暂无求购信息</p><a href="{:url('wanted/create')}" class="btn btn-primary" style="margin-top:16px">发布求购</a></div>
+{else}
+{foreach $list as $wanted}
+<a href="{:url('wanted/detail', ['id'=>$wanted.id])}" style="text-decoration:none;color:inherit">
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">{$wanted.title}</div>
+    {switch $wanted.status}
+      {case 1}<span class="card-badge badge-active">求购中</span>{/case}
+      {case 2}<span class="card-badge badge-completed">已完成</span>{/case}
+      {case 3}<span class="card-badge badge-cancelled">已撤消</span>{/case}
+    {/switch}
+  </div>
+  {if $wanted.image_url}
+  <div class="card-images"><img src="{$wanted.image_url}" alt="{$wanted.title}"></div>
+  {/if}
+  <div class="card-address">📍 {$wanted.wanted_address}</div>
+  <div class="card-time">⏰ {$wanted.create_time}</div>
+</div>
+</a>
+{/foreach}
+
+<div class="pagination">{$list|raw}</div>
+{/if}
+
+<a href="{:url('wanted/create')}" class="fab" title="发布求购">+</a>
+{/block}

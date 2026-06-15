@@ -1,0 +1,45 @@
+{extend name="layout" /}
+{block name="content"}
+{if $wanted.image_url}
+<img src="{$wanted.image_url}" class="detail-image" alt="{$wanted.title}">
+{/if}
+
+<div class="detail-title">{$wanted.title}</div>
+
+<div class="detail-info">
+  <div class="detail-info-item">
+    <span class="detail-info-label">状态</span>
+    <span class="detail-info-value">
+      {switch $wanted.status}
+        {case 1}<span style="color:#34d399">求购中</span>{/case}
+        {case 2}<span style="color:#60a5fa">已完成</span>{/case}
+        {case 3}<span style="color:#f87171">已撤消</span>{/case}
+      {/switch}
+    </span>
+  </div>
+  <div class="detail-info-item">
+    <span class="detail-info-label">求购地址</span>
+    <span class="detail-info-value">📍 {$wanted.wanted_address}</span>
+  </div>
+  <div class="detail-info-item">
+    <span class="detail-info-label">发布时间</span>
+    <span class="detail-info-value">{$wanted.create_time}</span>
+  </div>
+</div>
+
+{if $wanted.description}
+<div class="detail-desc">{$wanted.description}</div>
+{/if}
+
+{if $wanted.status == 1}
+<div class="btn-group">
+  <a href="{:url('wanted/edit', ['id'=>$wanted.id])}" class="btn btn-primary btn-sm">✏️ 编辑</a>
+  <a href="{:url('wanted/complete', ['id'=>$wanted.id])}" class="btn btn-success btn-sm" onclick="return confirm('确认标记为已求购完成？')">✅ 完成求购</a>
+  <a href="{:url('wanted/cancel', ['id'=>$wanted.id])}" class="btn btn-danger btn-sm" onclick="return confirm('确认撤消此求购？')">❌ 撤消求购</a>
+</div>
+{/if}
+
+<div style="margin-top:20px">
+  <a href="{:url('wanted/index')}" class="btn btn-sm" style="background:#1a1a24;color:#888;border:1px solid #2a2a3a">← 返回列表</a>
+</div>
+{/block}

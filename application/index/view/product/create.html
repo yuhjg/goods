@@ -1,0 +1,88 @@
+{extend name="layout" /}
+{block name="content"}
+<div style="font-size:20px;font-weight:700;color:#f0f0f0;margin-bottom:20px">📦 发布商品</div>
+
+<form action="{:url('product/save')}" method="post" enctype="multipart/form-data" id="productForm">
+<div class="form-group">
+  <label class="form-label">商品标题 *</label>
+  <input type="text" name="title" class="form-input" placeholder="请输入商品标题" maxlength="200" required>
+</div>
+
+<div class="form-group">
+  <label class="form-label">商品描述</label>
+  <textarea name="description" class="form-textarea" placeholder="描述商品成色、使用情况等..." maxlength="2000"></textarea>
+</div>
+
+<div class="form-group">
+  <label class="form-label">成交价（元）*</label>
+  <input type="number" name="selling_price" class="form-input" placeholder="0.00" step="0.01" min="0.01" required>
+</div>
+
+<div class="form-group">
+  <label class="form-label">原价（元）</label>
+  <input type="number" name="original_price" class="form-input" placeholder="0.00" step="0.01" min="0">
+  <div class="form-hint">选填，用于对比展示</div>
+</div>
+
+<div class="form-group">
+  <label class="form-label">自提地址 *</label>
+  <input type="text" name="pickup_address" class="form-input" placeholder="例如：XX小区北门" maxlength="500" required>
+</div>
+
+<div class="form-group">
+  <label class="form-label">商品图片（最多3张）</label>
+  <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+    <div class="icon">📷</div>
+    <div class="text">点击上传图片（最多3张）</div>
+    <div class="form-hint">支持 JPG/PNG/GIF/WebP，单张不超过5MB</div>
+  </div>
+  <input type="file" name="images[]" id="fileInput" accept="image/*" multiple onchange="previewImages(event)">
+  <div class="upload-preview" id="previewContainer"></div>
+</div>
+
+<div style="margin-top:24px;display:flex;gap:12px">
+  <button type="submit" class="btn btn-primary" style="flex:1">发布商品</button>
+  <a href="{:url('product/index')}" class="btn" style="background:#1a1a24;color:#888;border:1px solid #2a2a3a">取消</a>
+</div>
+</form>
+
+<script>
+var selectedFiles = [];
+function previewImages(e) {
+  var files = Array.from(e.target.files);
+  selectedFiles = selectedFiles.concat(files).slice(0, 3);
+  renderPreviews();
+  updateFileInput();
+}
+function removeImage(idx) {
+  selectedFiles.splice(idx, 1);
+  renderPreviews();
+  updateFileInput();
+}
+function renderPreviews() {
+  var c = document.getElementById('previewContainer');
+  c.innerHTML = '';
+  selectedFiles.forEach(function(f, i) {
+    var div = document.createElement('div');
+    div.className = 'upload-preview-item';
+    var img = document.createElement('img');
+    img.src = URL.createObjectURL(f);
+    var del = document.createElement('button');
+    del.className = 'del';
+    del.textContent = '×';
+    del.onclick = function(e){e.stopPropagation();removeImage(i)};
+    div.appendChild(img);
+    div.appendChild(del);
+    c.appendChild(div);
+  });
+  var area = document.getElementById('uploadArea');
+  if (selectedFiles.length >= 3) area.style.display = 'none';
+  else area.style.display = '';
+}
+function updateFileInput() {
+  var dt = new DataTransfer();
+  selectedFiles.forEach(function(f){dt.items.add(f)});
+  document.getElementById('fileInput').files = dt.files;
+}
+</script>
+{/block}
